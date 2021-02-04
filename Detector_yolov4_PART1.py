@@ -1,5 +1,6 @@
 # Object detection using YOLO V4
 # Detector_yolov4_PART1.py
+
 import numpy as np
 import cv2
 import warnings
@@ -22,7 +23,7 @@ yolo.load_weights("files/yolov4.weights", weights_type="yolo")
 inp = int(input('Choose the format for detecting objects : \n 1.Image \n 2.Video \n'))
 
 if inp == 1: #for image
-	yolo.inference(media_path="data/image.jpg")
+	yolo.inference(media_path="data/image00.jpg")
 
 elif inp == 2:#for video
-	yolo.inference(media_path="data/video.mp4", is_image=False)
+	yolo.inference(media_path="data/video00.mp4", is_image=False)

@@ -1,5 +1,6 @@
 # Object detection using YOLO V3
 # Detector_yolov3_PART1.py
+
 import numpy as np
 import cv2
 import warnings
@@ -24,7 +25,7 @@ nms_thresh = 0.3
 
 def findObjects(outputs, img):
     #getting the dimensions of the original image
-    h_tar, w_tar = img.shape[:2]
+    target_height, target_width = img.shape[:2]
     bbox = []
     classIds = []
     confs = []
@@ -35,13 +36,14 @@ def findObjects(outputs, img):
             classId = np.argmax(scores)
             confidence = scores[classId]
             if confidence > conf_thresh:
-                w,h = int(d[2]*w_tar), int(d[3]*h_tar)
-                x,y = (int(d[0]*w_tar) - w/2), (int(d[1]*h_tar) - h/2)
+                w,h = int(d[2]*target_width), int(d[3]*target_height)
+                x,y = (int(d[0]*target_width) - w/2), (int(d[1]*target_height) - h/2)
                 bbox.append([x,y,w,h])
                 classIds.append(classId)
                 confs.append(float(confidence))
 
     indices = cv2.dnn.NMSBoxes(bbox,confs,conf_thresh,nms_thresh)
+    print(f'Number of detected objects: {len(indices)}')
 
     for i in indices:
         i = i[0]
@@ -57,7 +59,7 @@ if inp == 1: #for image
     # We are using yolo v3 320 version,
     # which takes images of size 320x320
     input_size = 320
-    image = cv2.imread('data/image00.jpg')
+    image = cv2.imread('data/image01.jpg')
     # display original image
     cv2.imshow('Image',image)
 
@@ -70,18 +72,22 @@ if inp == 1: #for image
 
     # get names of output layers
     outputNames = [layerNames[i[0]-1] for i in nnet.getUnconnectedOutLayers()]
+    
+    print (outputNames)
 
     # forward outputs of output layers to extract
     # information on detected objects
     objectInfo = nnet.forward(outputNames)
-
-    # objectInfo is a list of arrays, where each row
-    # contains information about a detected object
-    print(f'Number of objects: {len(objectInfo)}')
-    print(f'Information of the first object in outputs : {objectInfo[0]}')
-
+    
     # mark all detected objects
     findObjects(objectInfo, image)
+    
+    # objectInfo is a list of arrays, where each row
+    # contains information on detected objects
+    # print the dimensions of the three outputs
+    print (objectInfo[0].shape)
+    print (objectInfo[1].shape)
+    print (objectInfo[2].shape)
     
     # display revised image
     cv2.imshow('Image',image)
@@ -90,7 +96,7 @@ if inp == 1: #for image
     cv2.waitKey(0)
 
 elif inp == 2: #for video
-    video = cv2.VideoCapture('data/video.mp4')
+    video = cv2.VideoCapture('data/video01.mp4')
 
     input_size = 320
 
